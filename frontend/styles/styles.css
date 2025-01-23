@@ -1,0 +1,28 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+button {
+    font-size: 1rem;
+    padding: 0.75rem;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+h1 {
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}

@@ -1,0 +1,4 @@
+my_personal_advisor_env/
+.venv/
+.pre-commit-config.yaml
+docker-compose.yml
