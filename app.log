@@ -1,0 +1,39 @@
+2025-01-23 21:09:07,809 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/login
+2025-01-23 21:09:07,811 - PersonalAdvisor - INFO - Login page requested
+2025-01-23 21:09:07,812 - PersonalAdvisor - INFO - Response status: 200
+2025-01-23 21:09:07,825 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/static/scripts/login.js
+2025-01-23 21:09:07,842 - PersonalAdvisor - INFO - Response status: 200
+2025-01-23 21:09:07,843 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/static/styles/styles.css
+2025-01-23 21:09:07,846 - PersonalAdvisor - INFO - Response status: 200
+2025-01-23 21:09:12,138 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/
+2025-01-23 21:09:12,142 - PersonalAdvisor - INFO - Response status: 400
+2025-01-23 21:09:17,815 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/
+2025-01-23 21:09:17,818 - PersonalAdvisor - INFO - Response status: 400
+2025-01-23 21:09:21,090 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/
+2025-01-23 21:09:21,092 - PersonalAdvisor - INFO - Response status: 400
+2025-01-23 21:09:22,431 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/
+2025-01-23 21:09:22,434 - PersonalAdvisor - INFO - Response status: 400
+2025-01-23 21:09:22,836 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/login
+2025-01-23 21:09:22,837 - PersonalAdvisor - INFO - Login page requested
+2025-01-23 21:09:22,837 - PersonalAdvisor - INFO - Response status: 200
+2025-01-23 21:09:35,777 - PersonalAdvisor - INFO - Incoming request: POST http://127.0.0.1:8000/users/login
+2025-01-23 21:09:40,950 - PersonalAdvisor - INFO - Incoming request: POST http://127.0.0.1:8000/users/login
+2025-01-23 21:28:21,347 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/
+2025-01-23 21:28:21,350 - PersonalAdvisor - INFO - Response status: 307
+2025-01-23 21:28:21,361 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/login
+2025-01-23 21:28:21,362 - PersonalAdvisor - INFO - Login page requested
+2025-01-23 21:28:21,364 - PersonalAdvisor - INFO - Response status: 200
+2025-01-23 21:28:36,506 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/register
+2025-01-23 21:28:36,507 - PersonalAdvisor - INFO - Registration page requested
+2025-01-23 21:28:36,508 - PersonalAdvisor - INFO - Response status: 200
+2025-01-23 21:41:03,041 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/register
+2025-01-23 21:41:03,043 - PersonalAdvisor - INFO - Registration page requested
+2025-01-23 21:41:03,044 - PersonalAdvisor - INFO - Response status: 200
+2025-01-23 21:41:33,219 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/register?username=yonatan&email=12345678%40gmail.com&password=12345678
+2025-01-23 21:41:33,221 - PersonalAdvisor - INFO - Registration page requested
+2025-01-23 21:41:33,222 - PersonalAdvisor - INFO - Response status: 200
+2025-01-23 21:41:40,064 - PersonalAdvisor - INFO - Incoming request: GET http://127.0.0.1:8000/login
+2025-01-23 21:41:40,065 - PersonalAdvisor - INFO - Login page requested
+2025-01-23 21:41:40,066 - PersonalAdvisor - INFO - Response status: 200
+2025-01-23 21:41:51,413 - PersonalAdvisor - INFO - Incoming request: POST http://127.0.0.1:8000/login
+2025-01-23 21:41:51,415 - PersonalAdvisor - INFO - Response status: 405

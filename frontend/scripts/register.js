@@ -6,7 +6,15 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     const password = document.getElementById("password").value;
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/users/signup", {
+        if (password.length < 8) {
+            alert("Password must be at least 8 characters long.");
+            return;
+        }
+        if (!email.includes("@")) {
+            alert("Please enter a valid email address.");
+            return;
+        }
+        const response = await fetch("/signup", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -16,11 +24,14 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
 
         if (!response.ok) {
             throw new Error("Failed to register");
+            console.log(response);
+            return;
         }
 
         const data = await response.json();
         alert("Registration successful");
         console.log(data);
+        window.location.href = "/home";
     }
     catch (error) {
         alert(error.message)

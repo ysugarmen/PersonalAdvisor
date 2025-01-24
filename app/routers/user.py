@@ -1,85 +1,99 @@
-from fastapi import APIRouter, Depends, HTTPException
-import logging
+from fastapi import APIRouter, Depends, Request, Form
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from app.config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY, get_db
+from app.config import get_db, SECRET_KEY, ALGORITHM
 from app.models.user import User
 from passlib.context import CryptContext
 from jose import jwt
-from datetime import datetime, timedelta, timezone
-from app.schemas.user import UserCreate, UserLogin
+import logging
 
+# Logger setup
+logger = logging.getLogger("UserRouter")
 
+# Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# Router setup
 router = APIRouter()
 
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+# Templates setup
+templates = Jinja2Templates(directory="frontend/templates")
 
 
-def create_access_token(data: dict, expires_delta: timedelta = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(
-            minutes=ACCESS_TOKEN_EXPIRE_MINUTES
-        )
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
-
-
-@router.post("/signup", response_model=dict)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    """Register a new user and store their data in the database."""
-    logging.info(f"Received signup request for user: {user}")
-    existing_user = db.query(User).filter(User.email == user.email).first()
-    if existing_user:
-        logging.error(f"Email already registered: {user.email}")
-        raise HTTPException(status_code=400, detail="Email already registered")
-    hashed_password = hash_password(user.password)
-    logging.info("Hashed password generated")
-    new_user = User(
-        username=user.username, email=user.email, hashed_password=hashed_password
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    logging.info(f"User created successfully: {new_user}")
-    return {
-        "id": new_user.id,
-        "username": new_user.username,
-        "email": new_user.email,
-    }
-
-
-@router.get("/{user_id}")
-def get_user(user_id: int, db: Session = Depends(get_db)):
-    """Retrieve a user by their ID."""
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+@router.get("/login", response_class=HTMLResponse)
+def serve_login(request: Request):
+    """Serve the login page."""
+    return templates.TemplateResponse("login.html", {"request": request, "error": None})
 
 
 @router.post("/login")
-def login(user: UserLogin, db: Session = Depends(get_db)):
-    """Authenticate user and return JWT access token"""
-    db_user = db.query(User).filter(User.email == user.email).first()
-    if not db_user:
-        raise HTTPException(status_code=401, detail="Invalid Email or Password")
+def login(
+    request: Request,
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    """Authenticate user and redirect to the home page if successful."""
+    db_user = db.query(User).filter(User.email == email).first()
+    if not db_user or not pwd_context.verify(password, db_user.hashed_password):
+        logger.warning(f"Login failed for email: {email}")
+        return templates.TemplateResponse(
+            "login.html",
+            {"request": request, "error": "Invalid email or password"},
+        )
 
-    if not verify_password(user.password, db_user.hashed_password):
-        raise HTTPException(status_code=401, detail="Invalid Email or Password")
-
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": db_user.email}, expires_delta=access_token_expires
+    access_token = jwt.encode(
+        {"sub": str(db_user.id)},
+        SECRET_KEY,
+        algorithm=ALGORITHM,
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    logger.info(f"Login successful for user: {db_user.username}")
+    response = RedirectResponse("/home", status_code=303)
+    response.set_cookie(
+        key="Authorization", value=f"Bearer {access_token}", httponly=True
+    )
+    return response
+
+
+@router.get("/register", response_class=HTMLResponse)
+def serve_register(request: Request):
+    """Serve the registration page."""
+    return templates.TemplateResponse(
+        "register.html", {"request": request, "error": None}
+    )
+
+
+@router.post("/register")
+def register(
+    request: Request,
+    username: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    """Register a new user and redirect to the home page if successful."""
+    if db.query(User).filter(User.email == email).first():
+        logger.warning(f"Registration failed: Email already registered ({email})")
+        return templates.TemplateResponse(
+            "register.html",
+            {"request": request, "error": "Email already registered"},
+        )
+
+    hashed_password = pwd_context.hash(password)
+    new_user = User(username=username, email=email, hashed_password=hashed_password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    logger.info(f"User registered successfully: {username}")
+    access_token = jwt.encode(
+        {"sub": str(new_user.id)},
+        SECRET_KEY,
+        algorithm=ALGORITHM,
+    )
+    response = RedirectResponse("/home", status_code=303)
+    response.set_cookie(
+        key="Authorization", value=f"Bearer {access_token}", httponly=True
+    )
+    return response
